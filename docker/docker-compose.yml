@@ -1,0 +1,42 @@
+version: '3.8'
+name: my_app
+services:
+  app:
+    build:
+      context: ../
+      dockerfile: DockerFile
+    ports:
+      - "8080:8080"
+    links:
+      - postgres
+    environment:
+      - POSTGRES_URL=postgresql://postgres:5432/postgres
+#    networks:
+#      - my-net
+    restart: on-failure
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 200M
+
+  postgres:
+    image: postgres:14.1-alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+    ports:
+      - '5432:5432'
+#    networks:
+#      - my-net
+    volumes:
+      - db:/var/lib/postgresql/data
+      - ./sql-scripts:/docker-entrypoint-initdb.d
+
+#networks:
+#  my-net:
+#    driver: bridge
+volumes:
+  db:
+    driver: local
