@@ -3,7 +3,7 @@ package com.intesigroup.gestioneutenti.exception;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
-import org.springframework.dao.DataIntegrityViolationException;
+import jdk.jshell.spi.ExecutionControl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -18,8 +18,11 @@ import java.util.Set;
 public class ControllerExceptionHandler {
 
     @ExceptionHandler(value = {UserNotFoundException.class, EmailAlreadyUsedException.class})
-    public ResponseEntity<?> exceptionHandler(RuntimeException ex, HttpServletRequest request) {
-        return new ResponseEntity<>(new ErrorDetails(new Date(), ex.getMessage(), null), HttpStatus.NOT_FOUND);
+    public ResponseEntity<?> exceptionHandler(Exception ex, HttpServletRequest request) {
+
+        HttpStatus status = ex instanceof UserNotFoundException ? HttpStatus.NOT_FOUND : HttpStatus.BAD_REQUEST;
+
+        return new ResponseEntity<>(new ErrorDetails(new Date(), ex.getMessage(), null), status);
     }
 
     @ExceptionHandler(value = {ConstraintViolationException.class})

@@ -6,7 +6,6 @@ import com.intesigroup.gestioneutenti.exception.EmailAlreadyUsedException;
 import com.intesigroup.gestioneutenti.exception.UserNotFoundException;
 import com.intesigroup.gestioneutenti.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
