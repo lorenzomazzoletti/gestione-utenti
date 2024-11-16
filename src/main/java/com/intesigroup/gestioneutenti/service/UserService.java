@@ -2,6 +2,7 @@ package com.intesigroup.gestioneutenti.service;
 
 import com.intesigroup.gestioneutenti.dto.UserDtoIn;
 import com.intesigroup.gestioneutenti.entity.User;
+import com.intesigroup.gestioneutenti.exception.EmailAlreadyUsedException;
 import com.intesigroup.gestioneutenti.exception.UserNotFoundException;
 import com.intesigroup.gestioneutenti.mapper.UserMapper;
 import com.intesigroup.gestioneutenti.repository.UserRepository;
@@ -33,8 +34,12 @@ public class UserService {
         return userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
     }
 
-    public User addUser(UserDtoIn user) {
+    public User addUser(UserDtoIn user) throws EmailAlreadyUsedException {
         log.info("Adding user with email: {}", user.email());
+
+        if(userRepository.existsByEmail(user.email())) {
+            throw new EmailAlreadyUsedException(user.email());
+        }
 
         return userRepository.save(UserMapper.userDtoInToUser(user));
     }

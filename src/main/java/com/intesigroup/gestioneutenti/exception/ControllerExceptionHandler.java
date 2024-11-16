@@ -17,8 +17,8 @@ import java.util.Set;
 @ControllerAdvice
 public class ControllerExceptionHandler {
 
-    @ExceptionHandler(value = {UserNotFoundException.class})
-    public ResponseEntity<?> exceptionHandler(UserNotFoundException ex, HttpServletRequest request) {
+    @ExceptionHandler(value = {UserNotFoundException.class, EmailAlreadyUsedException.class})
+    public ResponseEntity<?> exceptionHandler(RuntimeException ex, HttpServletRequest request) {
         return new ResponseEntity<>(new ErrorDetails(new Date(), ex.getMessage(), null), HttpStatus.NOT_FOUND);
     }
 

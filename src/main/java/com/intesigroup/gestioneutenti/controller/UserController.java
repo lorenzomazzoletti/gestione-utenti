@@ -2,6 +2,7 @@ package com.intesigroup.gestioneutenti.controller;
 
 import com.intesigroup.gestioneutenti.dto.UserDtoIn;
 import com.intesigroup.gestioneutenti.entity.User;
+import com.intesigroup.gestioneutenti.exception.EmailAlreadyUsedException;
 import com.intesigroup.gestioneutenti.exception.UserNotFoundException;
 import com.intesigroup.gestioneutenti.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +33,7 @@ public class UserController {
 
     @PostMapping
     @ResponseBody
-    public User createUtente(@RequestBody UserDtoIn user) {
+    public User createUtente(@RequestBody UserDtoIn user) throws EmailAlreadyUsedException {
         return utenteService.addUser(user);
     }
 
