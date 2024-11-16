@@ -1,6 +1,8 @@
 package com.intesigroup.gestioneutenti.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.util.List;
@@ -15,14 +17,16 @@ public class User {
     @Column(name = "id", nullable = false)
     private Long id;
 
+    @NotNull
     private String username;
 
-    @Column(unique=true)
+    @NotNull
+    @Email
     private String email;
 
     @ElementCollection
     @Enumerated(EnumType.STRING)
-    @CollectionTable(name = "roles", joinColumns = @JoinColumn(name = "id_user", referencedColumnName = "id"))
+    @CollectionTable(name = "roles", joinColumns = @JoinColumn(name = "id_user"))
     @Column(name = "role")
     private List<Role> roles;
 

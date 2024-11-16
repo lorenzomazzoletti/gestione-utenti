@@ -21,34 +21,42 @@ public class UserService {
     private final UserRepository userRepository;
 
     public List<User> userList() {
-        log.info("Lista utenti");
+        log.info("Retrieving all users list");
 
         return userRepository.findAll();
     }
 
 
     public User getUser(Long id) {
-        log.info("getUser with id: {}", id);
+        log.info("Retrieving user with id: {}", id);
 
         return userRepository.findById(id).orElseThrow(UserNotFoundException::new);
     }
 
     public User addUser(UserDtoIn user) {
-        log.info("addUser with email: {}", user.getEmail());
+        log.info("Adding user with email: {}", user.email());
 
         return userRepository.save(UserMapper.userDtoInToUser(user));
     }
 
-    public User updateUser(UserDtoIn user, Long id) throws BadRequestException {
-        log.info("updateUser with id: {}", id);
+    public User updateUser(UserDtoIn user, Long id) {
+        log.info("Updating user with id: {}", id);
 
         Optional<User> userOptional = userRepository.findById(id);
 
-        return userOptional.map(userRepository::save).orElseThrow(UserNotFoundException::new);
+        if(userOptional.isPresent()) {
+            User userToUpdate = userOptional.get();
+            userToUpdate.setUsername(user.username());
+            userToUpdate.setEmail(user.email());
+            userToUpdate.setRoles(user.roles());
+            return userRepository.save(userToUpdate);
+        } else {
+            throw new UserNotFoundException();
+        }
     }
 
     public void deleteUser(Long id) throws BadRequestException {
-        log.info("deleteUser with id: {}", id);
+        log.info("Deleting User with id: {}", id);
 
         Optional<User> userOptional = userRepository.findById(id);
 
