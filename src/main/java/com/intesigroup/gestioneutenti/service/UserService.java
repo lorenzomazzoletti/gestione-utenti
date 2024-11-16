@@ -1,6 +1,9 @@
 package com.intesigroup.gestioneutenti.service;
 
+import com.intesigroup.gestioneutenti.dto.UserDtoIn;
 import com.intesigroup.gestioneutenti.entity.User;
+import com.intesigroup.gestioneutenti.exception.UserNotFoundException;
+import com.intesigroup.gestioneutenti.mapper.UserMapper;
 import com.intesigroup.gestioneutenti.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -27,21 +30,21 @@ public class UserService {
     public User getUser(Long id) {
         log.info("getUser with id: {}", id);
 
-        return userRepository.findById(id).orElse(null);
+        return userRepository.findById(id).orElseThrow(UserNotFoundException::new);
     }
 
-    public User addUser(User user) {
-        log.info("addUser with id: {}", user.getId());
+    public User addUser(UserDtoIn user) {
+        log.info("addUser with email: {}", user.getEmail());
 
-        return userRepository.save(user);
+        return userRepository.save(UserMapper.userDtoInToUser(user));
     }
 
-    public User updateUser(User user, long id) throws BadRequestException {
+    public User updateUser(UserDtoIn user, Long id) throws BadRequestException {
         log.info("updateUser with id: {}", id);
 
         Optional<User> userOptional = userRepository.findById(id);
 
-        return userOptional.map(userRepository::save).orElseThrow(() -> new BadRequestException("User with id " + id + " not found"));
+        return userOptional.map(userRepository::save).orElseThrow(UserNotFoundException::new);
     }
 
     public void deleteUser(Long id) throws BadRequestException {

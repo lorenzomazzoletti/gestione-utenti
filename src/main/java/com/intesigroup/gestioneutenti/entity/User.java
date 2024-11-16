@@ -16,12 +16,14 @@ public class User {
     private Long id;
 
     private String username;
+
+    @Column(unique=true)
     private String email;
 
     @ElementCollection
-    @Enumerated(EnumType.STRING) // Use STRING to store enum names, or ORDINAL for index
-    @CollectionTable(name = "roles", joinColumns = @JoinColumn(name = "id_utente"))
+    @Enumerated(EnumType.STRING)
+    @CollectionTable(name = "roles", joinColumns = @JoinColumn(name = "id_user", referencedColumnName = "id"))
     @Column(name = "role")
-    private List<Ruolo> roles;
+    private List<Role> roles;
 
 }

@@ -9,7 +9,7 @@ create table roles
 (
     id             bigint not null
         primary key,
-    id_utente bigint not null,
+    id_user bigint not null,
     role varchar(255) not null
 );
 
@@ -21,4 +21,4 @@ alter table roles
 
 alter table roles
     add constraint fkmfk0sutpaln74rrn4jfy7i58i
-        foreign key (id_utente) references users;
+        foreign key (id_user) references users;
