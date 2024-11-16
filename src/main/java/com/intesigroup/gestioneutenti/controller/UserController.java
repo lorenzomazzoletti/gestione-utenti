@@ -2,9 +2,11 @@ package com.intesigroup.gestioneutenti.controller;
 
 import com.intesigroup.gestioneutenti.dto.UserDtoIn;
 import com.intesigroup.gestioneutenti.entity.User;
+import com.intesigroup.gestioneutenti.exception.UserNotFoundException;
 import com.intesigroup.gestioneutenti.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.apache.coyote.BadRequestException;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,7 +26,7 @@ public class UserController {
 
     @GetMapping("{id}")
     @ResponseBody
-    public User getUtente(@PathVariable Long id) {
+    public User getUtente(@PathVariable Long id) throws UserNotFoundException {
         return utenteService.getUser(id);
     }
 
@@ -36,13 +38,13 @@ public class UserController {
 
     @PutMapping("{id}")
     @ResponseBody
-    public User updateUtente(@RequestBody UserDtoIn user, @PathVariable Long id) throws BadRequestException {
+    public User updateUtente(@RequestBody UserDtoIn user, @PathVariable Long id) throws UserNotFoundException {
         return utenteService.updateUser(user, id);
     }
 
     @DeleteMapping("{id}")
-    @ResponseBody
-    public void deleteUtente(@PathVariable Long id) throws BadRequestException {
+    @ResponseStatus(value = HttpStatus.NO_CONTENT)
+    public void deleteUtente(@PathVariable Long id) throws UserNotFoundException {
         utenteService.deleteUser(id);
     }
 

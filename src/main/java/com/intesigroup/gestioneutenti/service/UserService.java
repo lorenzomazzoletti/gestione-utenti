@@ -27,10 +27,10 @@ public class UserService {
     }
 
 
-    public User getUser(Long id) {
+    public User getUser(Long id) throws UserNotFoundException {
         log.info("Retrieving user with id: {}", id);
 
-        return userRepository.findById(id).orElseThrow(UserNotFoundException::new);
+        return userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
     }
 
     public User addUser(UserDtoIn user) {
@@ -39,7 +39,7 @@ public class UserService {
         return userRepository.save(UserMapper.userDtoInToUser(user));
     }
 
-    public User updateUser(UserDtoIn user, Long id) {
+    public User updateUser(UserDtoIn user, Long id) throws UserNotFoundException {
         log.info("Updating user with id: {}", id);
 
         Optional<User> userOptional = userRepository.findById(id);
@@ -51,19 +51,21 @@ public class UserService {
             userToUpdate.setRoles(user.roles());
             return userRepository.save(userToUpdate);
         } else {
-            throw new UserNotFoundException();
+            throw new UserNotFoundException(id);
         }
     }
 
-    public void deleteUser(Long id) throws BadRequestException {
+    public void deleteUser(Long id) throws UserNotFoundException {
         log.info("Deleting User with id: {}", id);
 
         Optional<User> userOptional = userRepository.findById(id);
 
         if (userOptional.isPresent()) {
             userRepository.deleteById(id);
+
+            log.info("User with id: {} Deleted", id);
         } else {
-            throw new BadRequestException("User with id " + id + " not found");
+            throw new UserNotFoundException(id);
         }
     }
 
