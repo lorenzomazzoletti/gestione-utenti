@@ -39,9 +39,4 @@ public class ControllerExceptionHandler {
         return new ResponseEntity<>(new ErrorDetails(new Date(), "Validation Failed", response), HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(value = {DataIntegrityViolationException.class})
-    public ResponseEntity<?> exceptionHandler(DataIntegrityViolationException ex, HttpServletRequest request) {
-        return new ResponseEntity<>(new ErrorDetails(new Date(), ex.getMessage(), null), HttpStatus.BAD_REQUEST);
-    }
-
 }
