@@ -1,15 +1,41 @@
-# Gestione Utenti application
+# Gestione Utenti Application
 
-# Run
-From terminal access 'docker' directory and run "docker compose" command to build and run app and db containers.
+## Prerequisites
+Before you begin, ensure you have the following installed:
 
-# API
-The application api is exposed at 8080 port, the communication is performed through HTTP protocol.
+- Java Development Kit (JDK): Version 17 or later.
+- Maven: Version 3.3 or later.
+- Git: For version control.
+- Node.js: For installing Newman.
 
-To test it you can perform requests like:
+## Database Setup
+From terminal access 'docker' directory and run "docker compose" command to run the db container.
 
-- GET http://127.0.0.1:8080/ -> per ottenere la lista degli utenti con i loro ruoli
-- GET http://127.0.0.1:8080/{id} -> per ottenere un utente con il suo ruolo
-- POST http://127.0.0.1:8080/ -> per aggiungere un utente con uno o più ruoli
-- PUT http://127.0.0.1:8080/{id} -> per modificare l'utente
-- DELETE http://127.0.0.1:8080/{id} -> per cancellare l'utente
+## Build the Application
+Use Maven to compile and build the application:
+
+```bash
+    mvn clean install
+```
+
+## Run the Application
+You can start the application using the Spring Boot Maven plugin:
+
+```bash
+    mvn spring-boot:run
+```
+
+Be sure to have the postgres database running. 
+
+## Run Smoke Test
+There is a postman collection "gestione_utenti_smoke_test.postman_collection" that can be run to check the application.
+
+These are the instructions to run the collection from the terminal
+
+```bash
+    npm install -g newman
+    
+    newman run ./gestione_utenti_smoke_test.postman_collection --reporters cli,html --reporter-html-export results.html
+```
+
+Alternately the collection can be imported in postman. 
