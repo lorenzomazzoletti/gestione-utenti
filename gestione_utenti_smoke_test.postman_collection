@@ -1,0 +1,532 @@
+{
+	"info": {
+		"_postman_id": "c4132e17-9fbd-4dde-93b2-8263597c4af6",
+		"name": "Intesi Group Progettino - Gestione Utenti SmokeTest",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "15180331"
+	},
+	"item": [
+		{
+			"name": "Users List OK",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"GET request must return 200\", function () {\r",
+							"    pm.expect(pm.response.code).to.be.equals(200);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n \"instrumentList\": [\r\n    \"ATBMc1\"\r\n    ],\r\n \"requestId\": \"Calendar-test01\",\r\n \"requestType\": \"MKTCAL\",\r\n \"timeframe\": {\r\n \"fromDate\": \"2023-04-01\",\r\n \"toDate\": \"2023-12-31\"\r\n }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "User by id OK",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.sendRequest({\r",
+							"            url: \"http://localhost:8080/\",\r",
+							"            method: \"POST\",\r",
+							"            header: {\r",
+							"                'Content-Type': 'application/json', // Specify JSON content\r",
+							"            },\r",
+							"            body: {\r",
+							"                mode: 'raw', // Choose the appropriate mode (e.g., raw, form-data, etc.)\r",
+							"                raw: JSON.stringify({\r",
+							"                \"username\": \"utente\",\r",
+							"                \"email\": \"mailUtente@mail.it\",\r",
+							"                \"roles\": [\"MAINTAINER\", \"REPORTER\"]\r",
+							"                })\r",
+							"            }\r",
+							"        }, function (err, response) {\r",
+							"            const responseData = JSON.parse(response.stream.toString());\r",
+							"            const idUser = responseData.id;\r",
+							"\r",
+							"            pm.variables.set(\"idUser\", idUser);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response data user id must be equals to the one requested\", function () {\r",
+							"    const responseData = JSON.parse(pm.response.stream.toString());\r",
+							"    pm.expect(responseData.id).to.be.equals(pm.variables.get(\"idUser\"));\r",
+							"});\r",
+							"\r",
+							"pm.sendRequest({\r",
+							"            url: \"http://localhost:8080/\" + pm.variables.get(\"idUser\"),\r",
+							"            method: \"DELETE\",\r",
+							"        }, function (err, response) {});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/{{idUser}}",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"{{idUser}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "User by id NOT FOUND",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Not Found GET request\", function () {\r",
+							"    pm.expect(pm.response.code).to.be.equals(404);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.sendRequest({\r",
+							"            url: \"http://localhost:8080/\",\r",
+							"            method: \"GET\",\r",
+							"        }, function(err, response) {\r",
+							"            const responseData = JSON.parse(response.stream.toString());\r",
+							"\r",
+							"            // Extract the IDs into an array\r",
+							"            const idArray = responseData.map(obj => obj.id);\r",
+							"                \r",
+							"            let newId;\r",
+							"            do {\r",
+							"                newId = Math.floor(Math.random() * 1000000); // Generate a random number between 0 and 999999\r",
+							"            } while (idArray.includes(newId));\r",
+							"\r",
+							"            pm.variables.set(\"idUser\", newId);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/{{idUser}}",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"{{idUser}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create User OK",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"(async function () {\r",
+							"    pm.test(\"Response data user id must be equals to the one requested\", function () {\r",
+							"        const responseData = JSON.parse(pm.response.stream.toString());\r",
+							"        const idUser = responseData.id;\r",
+							"\r",
+							"        pm.variables.set(\"idUser\", idUser);\r",
+							"        pm.expect(pm.response.code).to.be.equals(200);\r",
+							"    });\r",
+							"\r",
+							"    try {\r",
+							"\r",
+							"        const response = await pm.sendRequest({\r",
+							"            url: \"http://localhost:8080/\" + pm.variables.get(\"idUser\"),\r",
+							"            method: \"DELETE\",\r",
+							"        });\r",
+							"        \r",
+							"    } catch (err) {\r",
+							"        console.error(err);\r",
+							"    }\r",
+							"})();"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\": \"utente2\",\r\n    \"email\": \"mailUtente9@mail.it\",\r\n    \"roles\": [\"MAINTAINER\"]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create User BAD REQUEST",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Not Found GET request\", function () {\r",
+							"    pm.expect(pm.response.code).to.be.equals(400);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\": \"utente2\",\r\n    \"email\": \"mailUtente9\",\r\n    \"roles\": [\"MAINTAINER\"]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update User OK",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.sendRequest({\r",
+							"            url: \"http://localhost:8080/\",\r",
+							"            method: \"POST\",\r",
+							"            header: {\r",
+							"                'Content-Type': 'application/json', // Specify JSON content\r",
+							"            },\r",
+							"            body: {\r",
+							"                mode: 'raw', // Choose the appropriate mode (e.g., raw, form-data, etc.)\r",
+							"                raw: JSON.stringify({\r",
+							"                \"username\": \"utente\",\r",
+							"                \"email\": \"mailUtente@mail.it\",\r",
+							"                \"roles\": [\"MAINTAINER\", \"REPORTER\"]\r",
+							"                })\r",
+							"            }\r",
+							"        }, function(err, response) {\r",
+							"            const responseData = JSON.parse(response.stream.toString());\r",
+							"            const idUser = responseData.id;\r",
+							"\r",
+							"            pm.variables.set(\"idUser\", idUser);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response data roles must be equals to the one requested\", function () {\r",
+							"    const responseData = JSON.parse(pm.response.stream.toString());\r",
+							"    pm.expect(responseData.roles).to.not.include([\"REPORTER\"]);\r",
+							"});\r",
+							"\r",
+							"pm.sendRequest({\r",
+							"            url: \"http://localhost:8080/\" + pm.variables.get(\"idUser\"),\r",
+							"            method: \"DELETE\",\r",
+							"        }, function(err, response) {});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\": \"utente\",\r\n    \"email\": \"mailUtente@mail.it\",\r\n    \"roles\": [\"MAINTAINER\"]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/{{idUser}}",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"{{idUser}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update User BAD REQUEST",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Not Found GET request\", function () {\r",
+							"    pm.expect(pm.response.code).to.be.equals(400);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\": \"utente3\",\r\n    \"email\": \"mailUtente2@mail.eu\",\r\n    \"roles\": [\"MAINTAINER\", \"REPORTER\", \"ROLENOTVALID\"]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/55555",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"55555"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete User OK",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.sendRequest({\r",
+							"            url: \"http://localhost:8080/\",\r",
+							"            method: \"POST\",\r",
+							"            header: {\r",
+							"                'Content-Type': 'application/json', // Specify JSON content\r",
+							"            },\r",
+							"            body: {\r",
+							"                mode: 'raw', // Choose the appropriate mode (e.g., raw, form-data, etc.)\r",
+							"                raw: JSON.stringify({\r",
+							"                \"username\": \"utente\",\r",
+							"                \"email\": \"mailUtente@mail.it\",\r",
+							"                \"roles\": [\"MAINTAINER\", \"REPORTER\"]\r",
+							"                })\r",
+							"            }\r",
+							"        }, function(err, response) {\r",
+							"            const responseData = JSON.parse(response.stream.toString());\r",
+							"            const idUser = responseData.id;\r",
+							"            \r",
+							"            pm.variables.set(\"idUser\", idUser);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Not Found GET request\", function () {\r",
+							"    pm.expect(pm.response.code).to.be.equals(204);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/{{idUser}}",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"{{idUser}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete User BAD REQUEST",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.sendRequest({\r",
+							"            url: \"http://localhost:8080/\",\r",
+							"            method: \"GET\"},\r",
+							"        function(err, response) {\r",
+							"            const responseData = JSON.parse(response.stream.toString());\r",
+							"        \r",
+							"            // Extract the IDs into an array\r",
+							"            const idArray = responseData.map(obj => obj.id);\r",
+							"                \r",
+							"            let newId;\r",
+							"            do {\r",
+							"                newId = Math.floor(Math.random() * 1000000); // Generate a random number between 0 and 999999\r",
+							"            } while (idArray.includes(newId));\r",
+							"\r",
+							"            pm.variables.set(\"idUser\", newId);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Not Found GET request\", function () {\r",
+							"    pm.expect(pm.response.code).to.be.equals(404);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/{{idUser}}",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"{{idUser}}"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "idUser",
+			"value": ""
+		}
+	]
+}
